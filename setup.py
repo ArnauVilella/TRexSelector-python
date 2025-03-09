@@ -5,13 +5,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="trexselector",
-    version="0.5.9",
+    version="0.6.0",
     author="Python port by Arnau Vilella",
     author_email="avp@connect.ust.hk",
     description="T-Rex Selector: High-Dimensional Variable Selection & FDR Control",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ArnauVilella/trexselector-python",
+    url="https://github.com/ArnauVilella/TRexSelector-python",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
