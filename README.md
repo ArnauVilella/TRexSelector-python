@@ -10,6 +10,19 @@ This Python package provides a port of the original R implementation, maintainin
 
 ## Installation
 
+### Requirements
+
+- Python >= 3.8
+- numpy >= 1.20.0
+- scipy >= 1.7.0
+- scikit-learn >= 1.0.0
+- tlars == 0.6.0
+- joblib >= 1.0.0
+- matplotlib >= 3.4.0
+- pandas >= 1.3.0
+
+For manylinux (most Linux distributions), macOS, and Windows platforms, all dependencies including `tlars` will be installed automatically when installing the package. For other systems, you might need to build the `tlars` package from source.
+
 ```bash
 pip install trexselector==0.5.9
 ```
