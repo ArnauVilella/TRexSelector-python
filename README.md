@@ -4,7 +4,7 @@ A Python port of the [TRexSelector](https://github.com/jasinmachkour/TRexSelecto
 
 ## Overview
 
-TRexSelector performs fast variable selection in high-dimensional settings while controlling the false discovery rate (FDR) at a user-defined target level. The package implements the Terminating-Random Experiments Selector (T-Rex) as described in [Machkour, Muma, and Palomar (2022)](https://arxiv.org/abs/2110.06048).
+TRexSelector performs fast variable selection in high-dimensional settings while controlling the false discovery rate (FDR) at a user-defined target level. The package implements the Terminating-Random Experiments Selector (T-Rex) as described in [Machkour, Muma, and Palomar (2025)](https://doi.org/10.1016/j.sigpro.2025.109894).
 
 This Python package provides a port of the original R implementation, maintaining the same functionality while providing a more Pythonic interface. The Python port was created by Arnau Vilella (avp@connect.ust.hk).
 
@@ -138,7 +138,7 @@ The package supports several variants of the T-Rex selector:
 
 ## References
 
-- Machkour, J., Muma, M., & Palomar, D. P. (2022). The Terminating-Random Experiments Selector: Fast High-Dimensional Variable Selection with False Discovery Rate Control. arXiv preprint arXiv:2110.06048.
+- Machkour, J., Muma, M., & Palomar, D. P. (2025). The Terminating-Random Experiments Selector: Fast High-Dimensional Variable Selection with False Discovery Rate Control. Signal Processing, 231, 109894.
 
 ## License
 
