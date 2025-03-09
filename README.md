@@ -11,7 +11,7 @@ This Python package provides a port of the original R implementation, maintainin
 ## Installation
 
 ```bash
-pip install trexselector==0.6.1
+pip install trexselector==0.5.9
 ```
 
 ## Usage
