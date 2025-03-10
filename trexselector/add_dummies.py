@@ -6,7 +6,7 @@ import numpy as np
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import pdist
 
-def add_dummies(X, num_dummies):
+def add_dummies(X, num_dummies, seed=None):
     """
     Add random dummy variables to the predictor matrix.
     
@@ -16,6 +16,8 @@ def add_dummies(X, num_dummies):
         Predictor matrix.
     num_dummies : int
         Number of dummies to append to the predictor matrix.
+    seed : int, optional
+        Random seed for reproducibility. If None, no seed is set.
     
     Returns
     -------
@@ -38,8 +40,11 @@ def add_dummies(X, num_dummies):
     # Number of rows and columns in X
     n, p = X.shape
     
+    # Set seed if provided
+    if seed is not None:
+        np.random.seed(seed)
+    
     # Generate dummy variables
-    np.random.seed(0)  # For reproducibility
     dummies = np.random.normal(0, 1, size=(n, num_dummies))
     
     # Scale dummies more carefully to ensure exact standardization
@@ -56,7 +61,7 @@ def add_dummies(X, num_dummies):
     
     return X_Dummy
 
-def add_dummies_GVS(X, num_dummies, corr_max=0.5):
+def add_dummies_GVS(X, num_dummies, corr_max=0.5, seed=None):
     """
     Add dummy variables with correlation constraints for group variable selection.
     
@@ -68,6 +73,8 @@ def add_dummies_GVS(X, num_dummies, corr_max=0.5):
         Number of dummies to append to the predictor matrix.
     corr_max : float, default=0.5
         Maximum allowed correlation between any two predictors from different clusters.
+    seed : int, optional
+        Random seed for reproducibility. If None, no seed is set.
     
     Returns
     -------
@@ -96,6 +103,10 @@ def add_dummies_GVS(X, num_dummies, corr_max=0.5):
     
     # Number of dummies per predictor
     num_dummies_per_pred = num_dummies // p
+    
+    # Set seed if provided
+    if seed is not None:
+        np.random.seed(seed)
     
     # Compute correlation matrix
     corr_mat = np.corrcoef(X, rowvar=False)
