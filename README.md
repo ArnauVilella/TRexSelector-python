@@ -24,7 +24,7 @@ This Python package provides a port of the original R implementation, maintainin
 For manylinux (most Linux distributions), macOS, and Windows platforms, all dependencies including `tlars` will be installed automatically when installing the package. For other systems, you might need to build the `tlars` package from source.
 
 ```bash
-pip install trexselector==0.6.4
+pip install trexselector==0.6.5
 ```
 
 ## Usage
