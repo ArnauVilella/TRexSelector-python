@@ -116,12 +116,18 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         np.random.seed(seed)
     
     # Define function to run a single random experiment
-    def run_experiment(h):
+    def run_experiment(h, lars_state_dict=None):
+        # Recreate tlars_cpp object if necessary (for parallel processing)
+        if parallel_process and lars_state_dict is not None:
+            lars_state = TLARS(lars_state_dict)
+        else:
+            lars_state = lars_state_list[h]
+        
         # Run random experiment
         lars_state = lm_dummy(
             X=X,
             y=y,
-            model_tlars=lars_state_list[h],
+            model_tlars=lars_state,
             T_stop=T_stop,
             num_dummies=num_dummies,
             method=method,
@@ -172,12 +178,18 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         else:
             dummy_rand_exp_last_betas = None
         
+        # For parallel processing, convert lars_state to dict
+        if parallel_process:
+            lars_state = lars_state.get_all()
+        
         return phi_T_mat, rand_exp_last_betas, lars_state, dummy_rand_exp_last_betas
     
     # Run experiments in parallel or sequentially
     if parallel_process:
+        # Convert lars_state_list to list of dictionaries for parallel processing
+        lars_state_dicts = [lars_state.get_all() if lars_state is not None else None for lars_state in lars_state_list]
         results = Parallel(n_jobs=parallel_max_cores)(
-            delayed(run_experiment)(h) for h in range(K)
+            delayed(run_experiment)(h, lars_state_dicts[h]) for h in range(K)
         )
         phi_T_mats, rand_exp_last_betas_list, lars_state_list, dummy_rand_exp_last_betas_list = zip(*results)
     else:
