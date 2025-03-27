@@ -116,6 +116,7 @@ def test_random_experiments_basic():
     Phi_diff = compare_results("rand_exp_basic", "Phi", result["Phi"])
     
     print(f"phi_T_mat shape: {result['phi_T_mat'].shape}")
+    # Sum of phi_T_mat
     print(f"phi_T_mat sum: {np.sum(result['phi_T_mat'])}")
     print(f"Phi length: {len(result['Phi'])}")
     print(f"Phi sum: {np.sum(result['Phi'])}")
@@ -157,6 +158,7 @@ def test_random_experiments_K():
         Phi_diff = compare_results(f"rand_exp_K{K_val}", "Phi", result["Phi"])
         
         print(f"phi_T_mat shape: {result['phi_T_mat'].shape}")
+        # Sum of phi_T_mat
         print(f"phi_T_mat sum: {np.sum(result['phi_T_mat'])}")
         print(f"Phi length: {len(result['Phi'])}")
         print(f"Phi sum: {np.sum(result['Phi'])}")
@@ -199,6 +201,7 @@ def test_random_experiments_T_stop():
         Phi_diff = compare_results(f"rand_exp_T_stop{t_stop}", "Phi", result["Phi"])
         
         print(f"phi_T_mat shape: {result['phi_T_mat'].shape}")
+        # Sum of phi_T_mat
         print(f"phi_T_mat sum: {np.sum(result['phi_T_mat'])}")
         print(f"Phi length: {len(result['Phi'])}")
         print(f"Phi sum: {np.sum(result['Phi'])}")
@@ -243,6 +246,7 @@ def test_random_experiments_methods():
         Phi_diff = compare_results(f"rand_exp_method_{method}", "Phi", result["Phi"])
         
         print(f"phi_T_mat shape: {result['phi_T_mat'].shape}")
+        # Sum of phi_T_mat
         print(f"phi_T_mat sum: {np.sum(result['phi_T_mat'])}")
         print(f"Phi length: {len(result['Phi'])}")
         print(f"Phi sum: {np.sum(result['Phi'])}")
