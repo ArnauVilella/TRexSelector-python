@@ -124,6 +124,51 @@ Generate synthetic Gaussian data for testing.
 - **seed**: int - Random seed.
 - **Returns**: tuple - (X, y, beta) containing predictor matrix, response, and true coefficients.
 
+#### fdp_hat(V, Phi, Phi_prime)
+
+Compute the estimated FDP for a set of voting thresholds.
+
+- **V**: ndarray - Voting thresholds.
+- **Phi**: ndarray - Vector of relative occurrences.
+- **Phi_prime**: ndarray - Vector of expected relative occurrences.
+- **Returns**: ndarray - Estimated FDP for each voting threshold.
+
+#### Phi_prime_fun(p, T_stop, num_dummies, phi_T_mat, Phi)
+
+Compute the expected relative occurrences for the T-Rex selector.
+
+- **p**: int - Number of variables.
+- **T_stop**: int - Number of included dummies before stopping.
+- **num_dummies**: int - Number of dummies appended.
+- **phi_T_mat**: ndarray - Matrix of relative occurrences.
+- **Phi**: ndarray - Vector of relative occurrences.
+- **Returns**: ndarray - Vector of expected relative occurrences.
+
+#### select_var_fun(p, tFDR, T_stop, FDP_hat_mat, Phi_mat, V)
+
+Select variables based on estimated FDP and voting thresholds for basic T-Rex variants.
+
+- **p**: int - Number of variables.
+- **tFDR**: float - Target FDR level.
+- **T_stop**: int - Number of included dummies before stopping.
+- **FDP_hat_mat**: ndarray - Matrix of estimated FDP values.
+- **Phi_mat**: ndarray - Matrix of relative occurrences.
+- **V**: ndarray - Voting thresholds.
+- **Returns**: dict - Contains selected variables and selection information.
+
+#### select_var_fun_DA_BT(p, tFDR, T_stop, FDP_hat_array_BT, Phi_array_BT, V, rho_grid)
+
+Select variables based on estimated FDP and voting thresholds for dependency-aware T-Rex variants.
+
+- **p**: int - Number of variables.
+- **tFDR**: float - Target FDR level.
+- **T_stop**: int - Number of included dummies before stopping.
+- **FDP_hat_array_BT**: ndarray - Array of estimated FDP values.
+- **Phi_array_BT**: ndarray - Array of relative occurrences.
+- **V**: ndarray - Voting thresholds.
+- **rho_grid**: ndarray - Grid of correlation thresholds.
+- **Returns**: dict - Contains selected variables and selection information.
+
 ### Advanced Features
 
 The package supports several variants of the T-Rex selector:
