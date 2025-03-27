@@ -10,7 +10,7 @@ import warnings
 
 from .random_experiments import random_experiments
 from .phi_prime_fun import Phi_prime_fun
-from .fdp import fdp_hat
+from .fdp_hat import fdp_hat
 from .select_var_fun import select_var_fun
 from .select_var_fun_DA_BT import select_var_fun_DA_BT
 
