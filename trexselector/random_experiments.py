@@ -4,7 +4,6 @@ Function for running K random experiments
 
 import numpy as np
 from joblib import Parallel, delayed
-import copy
 from tlars import TLARS
 from .lm_dummy import lm_dummy
 

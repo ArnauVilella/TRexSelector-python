@@ -26,24 +26,12 @@ def generate_gaussian_data(n=50, p=100, seed=789):
     beta : ndarray, shape (p,)
         True coefficient vector.
     """
-    # Set seed for reproducibility
-    np.random.seed(seed)
+    if seed is not None:
+        np.random.seed(seed)
     
-    # Generate predictor matrix
     X = np.random.normal(0, 1, size=(n, p))
-    
-    # Scale X
-    X = (X - X.mean(axis=0)) / X.std(axis=0, ddof=1)
-    
-    # Generate true coefficient vector (3 non-zero coefficients)
     beta = np.zeros(p)
     beta[:3] = 3.0
-    
-    # Generate response vector
-    eps = np.random.normal(0, 1, size=n)
-    y = X @ beta + eps
-    
-    # Center y
-    y = y - y.mean()
+    y = X @ beta + np.random.normal(0, 1, size=n)
     
     return X, y, beta 
