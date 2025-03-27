@@ -13,7 +13,7 @@ This Python package provides a port of the original R implementation, maintainin
 ### Requirements
 
 - Python >= 3.8
-- numpy >= 1.20.0
+- numpy
 - scipy >= 1.7.0
 - scikit-learn >= 1.0.0
 - tlars
