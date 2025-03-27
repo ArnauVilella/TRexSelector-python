@@ -16,7 +16,7 @@ This Python package provides a port of the original R implementation, maintainin
 - numpy >= 1.20.0
 - scipy >= 1.7.0
 - scikit-learn >= 1.0.0
-- tlars == 0.6.1
+- tlars
 - joblib >= 1.0.0
 - matplotlib >= 3.4.0
 - pandas >= 1.3.0
