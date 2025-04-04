@@ -11,7 +11,7 @@ from .add_dummies_GVS import add_dummies_GVS
 
 def lm_dummy(X, y, model_tlars=None, T_stop=1, num_dummies=None, 
              method="trex", GVS_type="IEN", type="lar", corr_max=0.5, 
-             lambda_2_lars=None, early_stop=True, verbose=False, 
+             lambda_2_lars=None, early_stop=True, verbose=True, 
              intercept=False, standardize=True):
     """
     Run one random experiment of the T-Rex selector, i.e., generates dummies, 

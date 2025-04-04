@@ -5,7 +5,7 @@ Main function for the T-Rex selector
 import numpy as np
 from scipy import stats
 from scipy.cluster.hierarchy import linkage, fcluster
-from scipy.spatial.distance import pdist
+from scipy.spatial.distance import squareform
 import warnings
 
 from .random_experiments import random_experiments
@@ -124,7 +124,9 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
         cor_mat_distance = 1 - np.abs(cor_mat)
         
         # Hierarchical clustering
+        from scipy.spatial.distance import pdist
         dendrogram = linkage(pdist(X.T), method=hc_dist)
+        # dendrogram = linkage(squareform(cor_mat_distance, checks=False), method=hc_dist)
         
         # Create rho grid
         rho_grid_subsample = np.round(np.linspace(0, p-1, hc_grid_length)).astype(int)
@@ -522,9 +524,8 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
         else:
             fdp_lower_tFDR = FDP_hat_values[V_len-1] <= tFDR
         
-        # Display progress
-        if verbose:
-            print(f"Included dummies before stopping: {T_stop}")
+    if verbose:
+        print(f"Included dummies before stopping: {T_stop}")
     
     # Select variables based on estimated FDP and voting thresholds
     if method in ["trex+DA+BT", "trex+DA+NN"]:

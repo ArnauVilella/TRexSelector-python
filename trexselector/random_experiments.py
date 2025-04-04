@@ -159,26 +159,13 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         # Relative occurrences
         phi_T_mat = np.zeros((p, T_stop))
         for c in range(T_stop):
-            if not np.any(dummy_num_path == c):
+            if not np.any(dummy_num_path == c + 1):
                 ind_sol_path = len(dummy_num_path) - 1
-                if verbose:
-                    print(f"Warning: For T_stop = {c}, LARS is running until k = min(n, p) and stops there before selecting {c} dummies.")
+                print(f"Warning: For T_stop = {c}, LARS is running until k = min(n, p) and stops there before selecting {c} dummies.")
             else:
-                # Get the solution path index where exactly c dummies are included
-                ind_sol_path = np.where(dummy_num_path == c)[0][0]
-                
-                # Special case for c=0 to match R: if no variables are active at the first step,
-                # use the next step where variables become active
-                if c == 0 and np.sum(np.abs(lars_path[:p, ind_sol_path]) > eps) == 0 and ind_sol_path + 1 < lars_path.shape[1]:
-                    # Look ahead to find first step with active variables
-                    for next_idx in range(ind_sol_path + 1, lars_path.shape[1]):
-                        active_count = np.sum(np.abs(lars_path[:p, next_idx]) > eps)
-                        if active_count > 0:
-                            ind_sol_path = next_idx
-                            break
+                ind_sol_path = np.where(dummy_num_path == c + 1)[0][0]
             
-            # Set indicators for active variables at this step
-            phi_T_mat[:, c] = (np.abs(lars_path[:p, ind_sol_path]) > eps)
+            phi_T_mat[:, c] = (1 / K) * (np.abs(lars_path[:p, ind_sol_path]) > eps)
         
         # Last coefficient vectors of all random experiments after termination
         rand_exp_last_betas = lars_path[:p, -1]
@@ -209,10 +196,7 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         lars_state_list_new = []
         dummy_rand_exp_last_betas_list = []
         
-        for h in range(K):
-            if verbose:
-                print(f"Running experiment {h+1}/{K}")
-            
+        for h in range(K):            
             phi_T_mat, rand_exp_last_betas, lars_state, dummy_rand_exp_last_betas = run_experiment(h)
             
             phi_T_mats.append(phi_T_mat)
@@ -223,13 +207,7 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         lars_state_list = lars_state_list_new
     
     # Combine results
-    phi_T_mat = np.zeros_like(phi_T_mats[0])
-    for mat in phi_T_mats:
-        phi_T_mat += mat
-
-    # Divide by K after summing all matrices
-    phi_T_mat = phi_T_mat / K
-
+    phi_T_mat = np.sum(phi_T_mats, axis=0)
     rand_exp_last_betas_mat = np.vstack(rand_exp_last_betas_list)
     Phi = np.mean(np.abs(rand_exp_last_betas_mat) > eps, axis=0)
     
@@ -239,6 +217,7 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         dummy_rand_exp_last_betas_mat = None
     
     # Return results
+    
     return {
         "phi_T_mat": phi_T_mat,
         "rand_exp_last_betas_mat": rand_exp_last_betas_mat,

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="trexselector",
-    version="0.6.7",
+    version="0.6.8",
     author="Python port by Arnau Vilella",
     author_email="avp@connect.ust.hk",
     description="T-Rex Selector: High-Dimensional Variable Selection & FDR Control",
