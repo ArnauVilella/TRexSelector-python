@@ -19,4 +19,4 @@ from .select_var_fun_DA_BT import select_var_fun_DA_BT
 from .phi_prime_fun import Phi_prime_fun
 from .gauss_data import generate_gaussian_data
 
-__version__ = '0.6.8'
+__version__ = '0.6.9'
