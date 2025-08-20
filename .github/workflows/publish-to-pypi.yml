@@ -6,38 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, windows-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9' # A recent version to run cibuildwheel
-
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel
-
-      - name: Build wheels
-        run: python -m cibuildwheel --output-dir dist
-        env:
-          CIBW_BUILD: 'cp36-* cp37-* cp38-* cp39-* cp310-* cp311-* cp312-* cp313-*'
-          CIBW_SKIP: '*-musllinux*'
-
-      - name: Store artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: dist
-          name: dist-${{ matrix.os }}
-
-  build_sdist:
-    name: Build source distribution
+  build-and-publish:
+    name: Build and publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,35 +17,14 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install build dependencies
-        run: python -m pip install build
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip build twine
 
-      - name: Build source distribution
-        run: python -m build --sdist
+      - name: Build distributions
+        run: python -m build
 
-      - name: Store artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: dist
-          name: dist-sdist
-
-  publish:
-    name: Publish to PyPI
-    needs: [build_wheels, build_sdist]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'created'
-
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          merge-multiple: true
-
-      - name: List artifacts
-        run: ls -R dist
-
-      - name: Publish package to PyPI
+      - name: Publish to PyPI
+        if: github.event_name == 'release' && github.event.action == 'created'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
