@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="trexselector",
-    version="0.6.9",
+    version='0.6.10',
     author="Python port by Arnau Vilella",
     author_email="avp@connect.ust.hk",
     description="T-Rex Selector: High-Dimensional Variable Selection & FDR Control",
@@ -18,7 +18,7 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.6",
     install_requires=[
         "numpy",
         "scipy",
