@@ -37,33 +37,52 @@ def select_var_fun(p, tFDR, T_stop, FDP_hat_mat, Phi_mat, V):
     
     if Phi_mat.shape[0] != T_stop or Phi_mat.shape[1] != p:
         raise ValueError(f"'Phi_mat' must have dimensions ({T_stop}, {p}).")
-    
-    # Initialize R_mat
-    R_mat = np.zeros((T_stop, len(V)))
-    
-    # Compute R_mat: number of selected variables for each T_stop and voting threshold
+
+    # The selection process should use the last "good" T_stop.
+    # The R code explicitly drops the results from the final T_stop value.
+    if T_stop > 1:
+        T_select = T_stop - 1
+        FDP_hat_select = FDP_hat_mat[:T_select, :]
+        Phi_mat_select = Phi_mat[:T_select, :]
+    else:
+        T_select = 1
+        FDP_hat_select = FDP_hat_mat
+        Phi_mat_select = Phi_mat
+
+    # Generate R_mat for the valid T_stop values, using > to match R
+    R_mat = np.zeros_like(FDP_hat_select)
+    for t in range(T_select):
+        for v_idx, v in enumerate(V):
+            R_mat[t, v_idx] = np.sum(Phi_mat_select[t] > v)
+
+    # Mask R_mat where FDP > tFDR, making invalid entries negative
+    R_mat_masked = np.where(FDP_hat_select <= tFDR, R_mat, -1)
+
+    if np.all(R_mat_masked == -1):
+        # No combination satisfies the FDR. Default to most conservative threshold and select nothing.
+        v_thresh = V[-1]
+        selected_var = np.array([], dtype=int)
+    else:
+        # Find the maximum number of selected variables in valid regions
+        max_R = np.max(R_mat_masked)
+        
+        # Find all indices (t, v) where R_mat is max
+        valid_indices = np.argwhere(R_mat_masked == max_R)
+        
+        # Tie-breaking from R: select the last index, which corresponds to the highest T_stop and then V
+        t_idx, v_idx = valid_indices[-1]
+        
+        v_thresh = V[v_idx]
+        selected_var = np.where(Phi_mat_select[t_idx] > v_thresh)[0]
+
+    # For consistency, compute the full R_mat over the original T_stop range
+    full_R_mat = np.zeros((T_stop, len(V)))
     for t in range(T_stop):
         for v_idx, v in enumerate(V):
-            R_mat[t, v_idx] = np.sum(Phi_mat[t] >= v)
-    
-    # Find maximum voting threshold with FDP <= tFDR
-    valid_thresholds = np.where(FDP_hat_mat[T_stop-1] <= tFDR)[0]
-    
-    if len(valid_thresholds) == 0:
-        # If no valid threshold is found, choose the highest voting threshold
-        v_idx = len(V) - 1
-    else:
-        # Choose the minimum valid threshold (largest number of selected variables)
-        v_idx = valid_thresholds[0]
-    
-    # Selected voting threshold
-    v_thresh = V[v_idx]
-    
-    # Selected variables
-    selected_var = np.where(Phi_mat[T_stop-1] >= v_thresh)[0]
-    
+            full_R_mat[t, v_idx] = np.sum(Phi_mat[t] > v)
+            
     return {
         "selected_var": selected_var,
         "v_thresh": v_thresh,
-        "R_mat": R_mat
+        "R_mat": full_R_mat
     } 

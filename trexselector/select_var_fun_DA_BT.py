@@ -40,38 +40,62 @@ def select_var_fun_DA_BT(p, tFDR, T_stop, FDP_hat_array_BT, Phi_array_BT, V, rho
     
     if Phi_array_BT.shape[0] != T_stop or Phi_array_BT.shape[1] != p or Phi_array_BT.shape[2] != len(rho_grid):
         raise ValueError(f"'Phi_array_BT' must have dimensions ({T_stop}, {p}, {len(rho_grid)}).")
-    
-    # Initialize R_array
-    R_array = np.zeros((T_stop, len(V), len(rho_grid)))
-    
-    # Compute R_array: number of selected variables for each T_stop, voting threshold, and rho value
+
+    # The selection process should use the last "good" T_stop.
+    # The R code explicitly drops the results from the final T_stop value.
+    if T_stop > 1:
+        T_select = T_stop - 1
+        FDP_hat_select = FDP_hat_array_BT[:T_select, :, :]
+        Phi_array_select = Phi_array_BT[:T_select, :, :]
+    else:
+        T_select = 1
+        FDP_hat_select = FDP_hat_array_BT
+        Phi_array_select = Phi_array_BT
+
+    # Generate R_array for the valid T_stop values, using > to match R
+    R_array = np.zeros_like(FDP_hat_select)
+    for t in range(T_select):
+        for v_idx, v in enumerate(V):
+            for rho_idx in range(len(rho_grid)):
+                R_array[t, v_idx, rho_idx] = np.sum(Phi_array_select[t, :, rho_idx] > v)
+
+    # Mask R_array where FDP > tFDR, making invalid entries negative
+    R_array_masked = np.where(FDP_hat_select <= tFDR, R_array, -1)
+
+    if np.all(R_array_masked == -1):
+        # No combination satisfies the FDR. Default to most conservative threshold and select nothing.
+        v_thresh = V[-1]
+        rho_thresh = rho_grid[0]
+        selected_var = np.array([], dtype=int)
+    else:
+        # Find the maximum number of selected variables in valid regions
+        max_R = np.max(R_array_masked)
+        
+        # Find all indices (t, v, rho) where R_array is max
+        max_R_indices = np.argwhere(R_array_masked == max_R)
+        
+        # Tie-breaking logic from R:
+        # 1. Find max v_idx among the candidates
+        max_v_idx = np.max(max_R_indices[:, 1])
+        # 2. Filter for candidates with that max_v_idx
+        v_filtered_indices = max_R_indices[max_R_indices[:, 1] == max_v_idx]
+        # 3. The last of these will have the highest t_idx, then rho_idx
+        t_idx, v_idx, rho_idx = v_filtered_indices[-1]
+        
+        v_thresh = V[v_idx]
+        rho_thresh = rho_grid[rho_idx]
+        selected_var = np.where(Phi_array_select[t_idx, :, rho_idx] > v_thresh)[0]
+
+    # For consistency, compute the full R_array over the original T_stop range
+    full_R_array = np.zeros((T_stop, len(V), len(rho_grid)))
     for t in range(T_stop):
         for v_idx, v in enumerate(V):
             for rho_idx in range(len(rho_grid)):
-                R_array[t, v_idx, rho_idx] = np.sum(Phi_array_BT[t, :, rho_idx] >= v)
-    
-    # Find all (v_idx, rho_idx) pairs where FDP_hat <= tFDR at the last T_stop
-    valid_pairs = np.argwhere(FDP_hat_array_BT[T_stop-1, :, :] <= tFDR)
-    
-    if len(valid_pairs) == 0:
-        # If no valid threshold is found, choose the highest voting threshold and lowest rho
-        v_idx = len(V) - 1
-        rho_idx = 0
-    else:
-        # Find the pair with the maximum R_array value
-        max_R_idx = np.argmax([R_array[T_stop-1, pair[0], pair[1]] for pair in valid_pairs])
-        v_idx, rho_idx = valid_pairs[max_R_idx]
-    
-    # Selected thresholds
-    v_thresh = V[v_idx]
-    rho_thresh = rho_grid[rho_idx]
-    
-    # Selected variables
-    selected_var = np.where(Phi_array_BT[T_stop-1, :, rho_idx] >= v_thresh)[0]
-    
+                full_R_array[t, v_idx, rho_idx] = np.sum(Phi_array_BT[t, :, rho_idx] > v)
+
     return {
         "selected_var": selected_var,
         "v_thresh": v_thresh,
         "rho_thresh": rho_thresh,
-        "R_array": R_array
+        "R_array": full_R_array
     } 
