@@ -161,7 +161,8 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         for c in range(T_stop):
             if not np.any(dummy_num_path == c + 1):
                 ind_sol_path = len(dummy_num_path) - 1
-                print(f"Warning: For T_stop = {c}, LARS is running until k = min(n, p) and stops there before selecting {c} dummies.")
+                if verbose:
+                    print(f"Warning: For T_stop = {c}, LARS is running until k = min(n, p) and stops there before selecting {c} dummies.")
             else:
                 ind_sol_path = np.where(dummy_num_path == c + 1)[0][0]
             
