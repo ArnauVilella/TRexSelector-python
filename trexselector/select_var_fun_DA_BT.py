@@ -79,8 +79,12 @@ def select_var_fun_DA_BT(p, tFDR, T_stop, FDP_hat_array_BT, Phi_array_BT, V, rho
         max_v_idx = np.max(max_R_indices[:, 1])
         # 2. Filter for candidates with that max_v_idx
         v_filtered_indices = max_R_indices[max_R_indices[:, 1] == max_v_idx]
-        # 3. The last of these will have the highest t_idx, then rho_idx
-        t_idx, v_idx, rho_idx = v_filtered_indices[-1]
+        
+        # 3. In R, the tie-break is on rho, then t.
+        # np.argwhere sorts by t, then v, then rho. To mimic R, we re-sort.
+        # Sort by rho (dim 2), then t (dim 0)
+        sorted_indices = v_filtered_indices[np.lexsort((v_filtered_indices[:, 0], v_filtered_indices[:, 2]))]
+        t_idx, v_idx, rho_idx = sorted_indices[-1]
         
         v_thresh = V[v_idx]
         rho_thresh = rho_grid[rho_idx]

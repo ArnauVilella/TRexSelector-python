@@ -69,8 +69,11 @@ def select_var_fun(p, tFDR, T_stop, FDP_hat_mat, Phi_mat, V):
         # Find all indices (t, v) where R_mat is max
         valid_indices = np.argwhere(R_mat_masked == max_R)
         
-        # Tie-breaking from R: select the last index, which corresponds to the highest T_stop and then V
-        t_idx, v_idx = valid_indices[-1]
+        # Tie-breaking from R: select the index corresponding to the highest V, then highest T.
+        # np.argwhere sorts by t (axis 0), then v (axis 1).
+        # We need to sort by v, then t, to mimic R's column-major `which`.
+        sorted_indices = valid_indices[np.lexsort((valid_indices[:, 0], valid_indices[:, 1]))]
+        t_idx, v_idx = sorted_indices[-1]
         
         v_thresh = V[v_idx]
         selected_var = np.where(Phi_mat_select[t_idx] > v_thresh)[0]

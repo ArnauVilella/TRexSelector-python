@@ -198,7 +198,7 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
         cor_coef = np.mean(cor_mat[np.triu_indices(p, k=1)])
     
     # Voting level grid
-    V = np.arange(0.5, 1.0, 1/K)
+    V = np.arange(0.5, 1.0 + eps, 1/K)
     V_len = len(V)
     
     # Find 75% voting reference point
