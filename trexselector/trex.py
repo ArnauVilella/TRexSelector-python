@@ -76,6 +76,8 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
         A dictionary containing the estimated support vector and additional information,
         including the number of used dummies and the number of included dummies before stopping.
     """
+    if seed is not None:
+        np.random.seed(seed)
     # Error control
     if not isinstance(X, np.ndarray) or X.ndim != 2:
         raise ValueError("'X' must be a 2D numpy array.")
@@ -243,7 +245,6 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
             standardize=True,
             parallel_process=parallel_process,
             parallel_max_cores=parallel_max_cores,
-            seed=seed,
             eps=eps
         )
         
@@ -408,7 +409,6 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
             standardize=True,
             parallel_process=parallel_process,
             parallel_max_cores=parallel_max_cores,
-            seed=seed,
             eps=eps
         )
         
