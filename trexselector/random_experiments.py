@@ -112,6 +112,7 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
     
     # Set random seed if provided
     if seed is not None:
+        random_state = np.random.get_state()
         np.random.seed(seed)
     
     # Define function to run a single random experiment
@@ -137,7 +138,8 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
             early_stop=early_stop,
             verbose=verbose,
             intercept=intercept,
-            standardize=standardize
+            standardize=standardize,
+            seed=seed + h if seed is not None else None
         )
         
         # Extract T-LARS path
@@ -167,6 +169,9 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
                 ind_sol_path = np.where(dummy_num_path == c + 1)[0][0]
             
             phi_T_mat[:, c] = (1 / K) * (np.abs(lars_path[:p, ind_sol_path]) > eps)
+        
+        # print(phi_T_mat.shape)
+        # print(np.sum(phi_T_mat))
         
         # Last coefficient vectors of all random experiments after termination
         rand_exp_last_betas = lars_path[:p, -1]
@@ -208,7 +213,7 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         lars_state_list = lars_state_list_new
     
     # Combine results
-    phi_T_mat = np.sum(phi_T_mats, axis=0)
+    phi_T_mat = np.sum(np.array(phi_T_mats), axis=0)
     rand_exp_last_betas_mat = np.vstack(rand_exp_last_betas_list)
     Phi = np.mean(np.abs(rand_exp_last_betas_mat) > eps, axis=0)
     
@@ -216,6 +221,9 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
         dummy_rand_exp_last_betas_mat = np.vstack(dummy_rand_exp_last_betas_list)
     else:
         dummy_rand_exp_last_betas_mat = None
+
+    if seed is not None:
+        np.random.set_state(random_state)
     
     # Return results
     

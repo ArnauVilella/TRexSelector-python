@@ -12,7 +12,7 @@ from .add_dummies_GVS import add_dummies_GVS
 def lm_dummy(X, y, model_tlars=None, T_stop=1, num_dummies=None, 
              method="trex", GVS_type="IEN", type="lar", corr_max=0.5, 
              lambda_2_lars=None, early_stop=True, verbose=True, 
-             intercept=False, standardize=True):
+             intercept=False, standardize=True, seed=None):
     """
     Run one random experiment of the T-Rex selector, i.e., generates dummies, 
     appends them to the predictor matrix, and runs the forward selection algorithm 
@@ -127,10 +127,10 @@ def lm_dummy(X, y, model_tlars=None, T_stop=1, num_dummies=None,
     if T_stop == 1 or model_tlars is None:
         if method in ["trex", "trex+DA+AR1", "trex+DA+equi", "trex+DA+BT", "trex+DA+NN"]:
             # Add random dummies
-            X_Dummy = add_dummies(X, num_dummies)
+            X_Dummy = add_dummies(X, num_dummies, seed=seed)
         else:  # method == "trex+GVS"
             # Add dummies with correlation constraints
-            GVS_dummies = add_dummies_GVS(X, num_dummies, corr_max)
+            GVS_dummies = add_dummies_GVS(X, num_dummies, corr_max, seed=seed)
             X_Dummy = GVS_dummies["X_Dummy"]
             
             # Ridge regression to determine lambda_2 for elastic net
