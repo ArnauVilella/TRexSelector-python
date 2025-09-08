@@ -194,7 +194,7 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
         cor_coef = np.mean(cor_mat[np.triu_indices(p, k=1)])
     
     # Voting level grid
-    V = np.arange(0.5, 1.0, 1/20)
+    V = np.arange(0.5, 1.0, 1/K)
     V = np.append(V, 1.0 - eps)
     V_len = len(V)
     
@@ -382,6 +382,7 @@ def trex(X, y, tFDR=0.2, K=20, max_num_dummies=10, max_T_stop=True,
     else:
         fdp_lower_tFDR = FDP_hat[V_len-1] <= tFDR
     
+
     # Second phase: increase T_stop until FDP exceeds tFDR
     while fdp_lower_tFDR and (T_stop < max_T):
         T_stop += 1

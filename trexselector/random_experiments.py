@@ -119,7 +119,7 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
     def run_experiment(h, lars_state_dict=None):
         # Recreate tlars_cpp object if necessary (for parallel processing)
         if parallel_process and lars_state_dict is not None:
-            lars_state = TLARS(lars_state_dict)
+            lars_state = TLARS(lars_state=lars_state_dict)
         else:
             lars_state = lars_state_list[h]
         
@@ -191,7 +191,11 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
     # Run experiments in parallel or sequentially
     if parallel_process:
         # Convert lars_state_list to list of dictionaries for parallel processing
-        lars_state_dicts = [lars_state.get_all() if lars_state is not None else None for lars_state in lars_state_list]
+        if lars_state_list and lars_state_list[0] is not None and isinstance(lars_state_list[0], dict):
+            lars_state_dicts = lars_state_list
+        else:
+            lars_state_dicts = [state.get_all() if state is not None else None for state in lars_state_list]
+        
         results = Parallel(n_jobs=parallel_max_cores)(
             delayed(run_experiment)(h, lars_state_dicts[h]) for h in range(K)
         )
