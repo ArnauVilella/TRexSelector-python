@@ -170,9 +170,6 @@ def random_experiments(X, y, K=20, T_stop=1, num_dummies=None, method="trex",
             
             phi_T_mat[:, c] = (1 / K) * (np.abs(lars_path[:p, ind_sol_path]) > eps)
         
-        # print(phi_T_mat.shape)
-        # print(np.sum(phi_T_mat))
-        
         # Last coefficient vectors of all random experiments after termination
         rand_exp_last_betas = lars_path[:p, -1]
         
